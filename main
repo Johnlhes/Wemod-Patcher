@@ -1,0 +1,33 @@
+- name: Go-build-deploy
+  # You may pin to the exact commit or the version.
+  # uses: santoshkowshikhr/go-build-deploy@b90437c0604fba8c2af09f2d602f496af7ac257b
+  uses: santoshkowshikhr/go-build-deploy@v1.0.4
+  with:
+    # The executable name to be built, if not specified defaults to repo name.
+    executable_name: # optional, default is {{ GITHUB_REPOSITORY }}
+    # The target OS of which the executable has to be built for.
+    goos: # optional, default is linux
+    # The target OS of which the executable has to be built for.
+    goarch: # optional, default is amd64
+    # The aws credentails for the AWS account to push build to S3.
+    aws_access_key_id: 
+    # The aws credentails for the AWS account to push build to S3.
+    aws_secret_access_key: 
+    # The S3 bucket to copy the executable.
+    s3_bucket: # optional
+    # The release version of the code being deployed.
+    release_version: # optional, default is v0.0.0
+    # The aws region for the account.
+    aws_region: # optional, default is us-east-1
+    # User name to connect to ec2
+    ec2_user: # optional
+    # IP Address to connect to ec2
+    ec2_ip: # optional
+    # EC2 User password to connect to ec2
+    ec2_pass: # optional
+    # EC2 path to deploy the file to.
+    ec2_path: # optional
+    # Parameter to push to s3
+    push_to_s3: # default is false
+    # Parameter to push to ec2
+    push_to_ec2: # default is false
