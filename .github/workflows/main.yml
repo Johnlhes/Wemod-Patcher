@@ -17,17 +17,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install CMake
-        uses: lukka/get-cmake@latest
-
-      - name: Configure MSVC environment
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install MSYS2 / MinGW
+        uses: msys2/setup-msys2@v2
         with:
-          arch: x64
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+            base-devel
 
-      - name: Build CMake helper DLL
+      - name: Build CMake helper DLL with MinGW
+        shell: msys2 {0}
         run: |
-          cmake -S tools/asar-fuses-bypass -B tools/asar-fuses-bypass/cmake-build-release -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+          cmake -S tools/asar-fuses-bypass -B tools/asar-fuses-bypass/cmake-build-release -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
           cmake --build tools/asar-fuses-bypass/cmake-build-release --config Release
 
       - name: Restore NuGet packages
@@ -35,10 +37,15 @@ jobs:
           nuget restore Wemod-Patcher.sln
 
       - name: Build solution in Release mode
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Compile .NET app
         run: |
           msbuild Wemod-Patcher.sln /p:Configuration=Release /p:Platform="Any CPU" /m
 
-      - name: Prepare artifact folder
+      - name: Prepare artifact
         run: |
           $artifactDir = "artifact"
           New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
@@ -46,13 +53,6 @@ jobs:
 
           Get-ChildItem "WeModPatcher\bin\Release\*.dll" | ForEach-Object {
             Copy-Item $_.FullName $artifactDir -Force
-          }
-
-          $configFiles = Get-ChildItem "WeModPatcher\bin\Release\*.config" -ErrorAction SilentlyContinue
-          if ($configFiles) {
-            $configFiles | ForEach-Object {
-              Copy-Item $_.FullName $artifactDir -Force
-            }
           }
 
       - name: Upload artifact
