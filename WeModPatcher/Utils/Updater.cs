@@ -58,7 +58,7 @@ namespace WeModPatcher.Utils
             
                 return latestVersion > currentVersion;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
